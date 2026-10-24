@@ -1,0 +1,12 @@
+/outputs/
+/.dist_test/
+__pycache__/
+*.py[cod]
+build/
+*.so
+*.o
+*.pth
+*.pt
+*.log
+*.egg-info/
+.pytest_cache/

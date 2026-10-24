@@ -1,0 +1,9 @@
+_base_: [default.yml]
+
+# Model
+model:
+  backbone:
+    type: PointNet
+
+resume: false
+load_from: 

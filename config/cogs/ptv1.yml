@@ -1,0 +1,10 @@
+_base_: [default.yml]
+
+# Model
+model:
+  backbone:
+    type: PointTransformerV1
+    blocks: [1, 2, 3, 5, 2] # ([1, 1, 1, 1, 1], [1, 2, 2, 2, 2], [1, 2, 3, 5, 2])
+
+resume: false
+load_from: 

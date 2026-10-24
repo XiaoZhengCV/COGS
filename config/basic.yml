@@ -1,0 +1,98 @@
+# Setup
+env_cfg: {}
+randomness: 
+  seed: 42
+train_cfg:
+  by_epoch: &by_epoch true
+  max_epochs: &max_epochs 200
+  dynamic_intervals:
+    - [1, 1]
+    - [150, 1]
+val_cfg: {}
+test_cfg: {}
+
+# Dataset and loaders
+train_dataloader:
+  batch_size: &batch_size 32
+  num_workers: &num_workers 8
+  pin_memory: true
+  persistent_workers: true
+  drop_last: true
+  collate_fn: 
+    type: default_collate
+  sampler:
+    type: DefaultSampler
+    shuffle: true
+  dataset: &dataset
+    type: GaussianDataset
+    transform:
+      - shuffle
+      - attr_normalize
+      - random_scale
+      - random_shift
+      - random_dropout
+      - random_jitter
+    num_points: 1024
+    split: train
+    partition: 0.8
+val_dataloader: &val_dataloader
+  batch_size: *batch_size
+  num_workers: *num_workers
+  pin_memory: true
+  persistent_workers: true
+  collate_fn: 
+    type: default_collate
+  sampler:
+    type: DefaultSampler
+    shuffle: false
+  drop_last: false
+  dataset: 
+    <<: *dataset
+    transform:
+      - attr_normalize
+    split: test
+test_dataloader: *val_dataloader
+
+# Optimization
+optim_wrapper:
+  type: OptimWrapper
+  optimizer:
+    type: AdamW
+    lr: 0.001
+    weight_decay: 0.0001
+  clip_grad:
+    type: norm
+    max_norm: 1
+param_scheduler:
+  type: CosineAnnealingLR
+  T_max: *max_epochs
+  eta_min: 0.00001
+  by_epoch: *by_epoch
+
+# Evaluation
+val_evaluator: &eval
+  - type: SingleLabelMetrics
+test_evaluator: *eval
+
+# Hooks
+default_hooks:
+  logger:
+    type: LoggerHook
+    interval: 10000
+    ignore_last: false
+  checkpoint:
+    type: CheckpointHook
+    by_epoch: *by_epoch
+    interval: 20
+    max_keep_ckpts: 1
+    save_best: auto
+    rule: greater
+custom_hooks:
+  -
+    type: TrainAccuracyLogHook
+
+visualizer:
+  type: Visualizer
+  vis_backends:
+    -
+      type: TensorboardVisBackend

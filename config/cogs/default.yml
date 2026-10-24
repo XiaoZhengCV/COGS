@@ -1,0 +1,30 @@
+_base_: [../basic.yml]
+
+train_dataloader: 
+  dataset: &dataset
+    loader:
+      type: COGSLoader
+    root: /data/home/xiaoz/code/data/COGS/fps_1024
+    partition: 100  # Benchmark: 100 training objects/class; use 0.8 for pretraining.
+    input_type: &input_type posqc
+    transform:
+      - shuffle
+      - attr_normalize
+      - random_rotate
+      - random_scale
+      - random_shift
+      - random_dropout
+      - random_jitter
+
+val_dataloader: &val_dataloader
+  dataset:
+    <<: *dataset
+    transform:
+      - attr_normalize
+test_dataloader: *val_dataloader
+
+model:
+  type: Classification
+  backbone:
+    num_classes: 40
+    input_type: *input_type

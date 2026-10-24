@@ -1,0 +1,12 @@
+_base_: [default.yml]
+
+# Model
+model:
+  backbone:
+    type: DGCNN
+    n_knn: 20
+    dropout: 0.5
+    emb_dims: 1024
+
+resume: false
+load_from: 

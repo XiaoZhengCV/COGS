@@ -1,0 +1,70 @@
+_base_: [default.yml]
+
+# Setup
+train_cfg:
+  by_epoch: &by_epoch true
+  max_epochs: &max_epochs 200
+
+# Optimization
+optim_wrapper:
+  _delete_: True
+  type: OptimWrapper
+  optimizer:
+    type: AdamW
+    lr: 0.0005
+    weight_decay: 0.05
+  paramwise_cfg:
+    bias_decay_mult: 0.0
+    flat_decay_mult: 0.0
+    custom_keys:
+      token:
+        decay_mult: 0.0
+  clip_grad:
+    type: norm
+    max_norm: 10
+param_scheduler:
+  _delete_: true
+  type: TimmStyleCosineLR
+  t_initial: *max_epochs
+  lr_min: 1.e-6
+  warmup_t: 20
+  warmup_lr_init: 1.e-6
+  by_epoch: *by_epoch
+  convert_to_iter_based: false
+
+train_dataloader:
+  dataset: 
+    transform:
+      - shuffle
+      - attr_normalize
+      - gaussianmae_normalize
+      - random_rotate
+      - random_scale
+      - random_shift
+      - random_dropout
+      - random_jitter
+    input_type: &input_type posqc
+val_dataloader: &val_dataloader
+  dataset: 
+    transform:
+      - attr_normalize
+      - gaussianmae_normalize
+    input_type: *input_type
+test_dataloader: *val_dataloader
+
+# Model
+model:
+  backbone:
+    type: GaussianMAE
+    input_type: *input_type
+    head_type: full
+    trans_dim: 384
+    depth: 12
+    drop_path_rate: 0.1 
+    num_heads: 6
+    num_group: 64
+    group_size: 32
+    ckpt_path: '{{fileDirname}}/../../halo/model/ckpt-last.pth'
+
+resume: false
+load_from: 

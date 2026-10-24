@@ -1,0 +1,9 @@
+_base_: [default.yml]
+
+# Model
+model:
+  backbone:
+    type: Dela
+
+resume: false
+load_from: 

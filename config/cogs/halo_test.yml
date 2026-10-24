@@ -1,0 +1,36 @@
+_base_: [default.yml]
+  
+train_dataloader: 
+  dataset: 
+    transform:
+      - shuffle
+      - attr_normalize
+      - random_rotate
+      - random_scale
+      - random_shift
+      - random_dropout
+      - random_jitter
+      - sh2rgb
+      - q2angle
+
+val_dataloader: &val_dataloader
+  dataset:
+    transform:
+      - attr_normalize
+      - sh2rgb
+      - q2angle
+test_dataloader: *val_dataloader
+
+# Model
+model:
+  backbone:
+    type: HALOTest
+    out_channels: [64, 128, 256]
+    group_channels: [32, 32, 32]
+    k_neighbors: [20, 20, 20]
+    n_points: [1024, 256, 64]
+    ratio: 0.5
+    emb_dims: 2048
+
+resume: false
+load_from: 
