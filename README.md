@@ -21,7 +21,7 @@ Other dependencies:
 > It will take some time to train the model for the first time, since [cutils](./halo/model/cutils) need to be build.
 
 ## Data and weights
-[COGS](https://huggingface.co/datasets/XiaoZhengCV/COGS)
+[COGS](https://huggingface.co/datasets/XiaoZhengCV/COGS)  
 Set the `train_dataloader.dataset.root` in the [default.yml](./config/cogs/default.yml) to your downloaded data directory.  
 Gaussian-MAE additionally needs pretrained checkpoint following [ShapeSplat](https://github.com/qimaqi/ShapeSplat-Gaussian_MAE)
 
